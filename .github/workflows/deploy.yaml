@@ -1,0 +1,50 @@
+name: deploy images
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-ubuntu-based:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        base-img: [slim]
+        qemu-version: [5.2.0, 6.2.0, 7.0.0, 7.1.0]
+        include:
+          - qemu-target-tag: rv64
+            qemu-target-list: riscv64-softmmu,riscv64-linux-user
+
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          build-args: |
+            BASE_IMG=rustlang/rust:nightly-${{ matrix.base-img }}
+            QEMU_VER=${{ matrix.qemu-version }}
+            QEMU_TARGET=${{ matrix.qemu-target-list }}
+          file: Dockerfile
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ghcr.io/rustsbi/qemu:${{ matrix.base-img }}-${{ matrix.qemu-version }}-${{ matrix.qemu-target-tag }}
+          cache-from: type=registry,ref=ghcr.io/rustsbi/qemu:${{ matrix.base-img }}-${{ matrix.qemu-version }}-${{ matrix.qemu-target-tag }}
+          cache-to: type=inline
