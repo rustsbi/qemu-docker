@@ -27,15 +27,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.12
-
-      - name: Run Python commands
+      - name: Install dependencies
         run: |
-          pip install --upgrade pip
-          python3.12 -m venv env
+          sudo apt install python3-venv -y
+          python3 -m venv env
           source env/bin/activate
           echo "VIRTUAL ENV:" $VIRTUAL_ENV
 
