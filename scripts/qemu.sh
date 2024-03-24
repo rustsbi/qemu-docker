@@ -16,12 +16,18 @@ apt install -y --no-install-recommends \
     libfdt-dev \
     libpixman-1-dev \
     zlib1g-dev \
-    ninja-build
+    ninja-build \
+    python3 \
+    python3-venv
 # end of list
 
 # qemu version
 : "${QEMU_VER:=7.1.0}"
 : "${QEMU_TARGET:=riscv64-softmmu}"
+
+# Enable venv
+python3 -m venv .env
+source .env/bin/activate
 
 # Get qemu
 wget https://download.qemu.org/qemu-$QEMU_VER.tar.xz -O "$TEMP_DIR/qemu-$QEMU_VER.tar.xz"
