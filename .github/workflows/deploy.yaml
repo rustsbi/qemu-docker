@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         base-img: [slim]
-        qemu-version: [5.2.0, 6.2.0, 7.0.0, 7.1.0, 7.2.0, 8.0.5, 8.1.5, 8.2.2]
+        qemu-version: [5.2.0, 6.2.0, 7.0.0, 7.1.0, 7.2.0, 8.0.5] # 8.1.5, 8.2.2
         include:
           - qemu-target-tag: rv64
             qemu-target-list: riscv64-softmmu,riscv64-linux-user
